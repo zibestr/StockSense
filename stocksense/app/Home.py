@@ -3,14 +3,17 @@ import yfinance as yf
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from stocksense.src.model import get_apple_model
+from src.model import get_apple_model
 import streamlit.components.v1 as components
 
 mpl.rc('axes', facecolor='#0E1117', edgecolor='#0E1117')
 mpl.rc('savefig', facecolor='#0E1117', edgecolor='#0E1117')
 mpl.rc('xtick', color='#0E1117')
+mpl.rc('ytick', color='white')
 mpl.rc('font', size=13, weight='bold', style='normal')
-mpl.rc('boxplot.capprops', linewidth=3)
+mpl.rc('boxplot.capprops', linewidth=3, color='white')
+mpl.rc('boxplot.boxprops', linewidth=3, color='white')
+mpl.rc('boxplot.whiskerprops', linewidth=1.5, color='white')
 mpl.rc('boxplot.medianprops', linewidth=3, color='#FF4B4B')
 
 
@@ -33,10 +36,9 @@ def home_page():
                                        'Tesla', 'Alphabet'))
 
             period = st.selectbox('Select period for analysis: ',
-                                  ('1 month', '3 month',
-                                   '6 month', '1 year',
-                                   '2 years', '5 years',
-                                   '10 years', 'All time'))
+                                  ('3 month', '6 month', '1 year',
+                                   '2 years', '5 years', '10 years',
+                                   'All time'))
 
             submitted = st.form_submit_button("Submit")
             if submitted:
@@ -59,7 +61,6 @@ def __load_ticker(stock_name: str, period: str) -> DataFrame:
         'Alphabet': 'GOOG'
     }
     periods = {
-        '1 month': '1mo',
         '3 month': '3mo',
         '6 month': '6mo',
         '1 year': '1y',
@@ -129,13 +130,18 @@ def __stock_stats(df: DataFrame, stock_name: str, period: str):
     )
     model, html = __get_model(stock_name)
 
-    predicted = model.predict(df['Close'].iloc[-30:].to_numpy()
-                              .reshape(1, -1))[-1]
-    st.markdown(f'#### Predicted next Close price: {predicted:.3f}')
-    components.html(html, height=300)
+    if model is not None:
+        predicted = model.predict(df['Close'].iloc[-30:].to_numpy()
+                                  .reshape(1, -1))[-1]
+        st.markdown(f'#### Predicted next Close price: {predicted:.3f}')
+        components.html(html, height=300, width=1000)
+    else:
+        predicted = 666.666
+        st.markdown(f'#### Predicted next Close price: {predicted:.3f}')
 
 
 def __get_model(stock_name: str):
     match stock_name:
         case 'Apple':
             return get_apple_model()
+    return None, None
