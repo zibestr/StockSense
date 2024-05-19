@@ -156,9 +156,7 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
     load_bar = st.progress(0, text=progress_text)
 
     load_bar.progress(50, text=progress_text)
-    # TODO: add other models
-    # regressor = AutoRegressor(stock_name)
-    regressor = AutoRegressor('Apple')
+    regressor = AutoRegressor(stock_name)
     load_bar.progress(100, text=progress_text)
     load_bar.empty()
 

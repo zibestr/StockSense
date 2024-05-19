@@ -7,3 +7,10 @@ def get_apple_model() -> tuple[BaseEstimator, str]:
     with open('stocksense/res/html/apple_model.html') as html_file:
         html = html_file.read()
     return model, html
+
+
+def get_alphabet_model() -> tuple[BaseEstimator, str]:
+    model: BaseEstimator = load('stocksense/res/models/alphabet_model.bin')
+    with open('stocksense/res/html/alphabet_model.html') as html_file:
+        html = html_file.read()
+    return model, html

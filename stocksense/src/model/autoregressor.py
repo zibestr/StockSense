@@ -1,5 +1,5 @@
 from sklearn.base import RegressorMixin
-from src.model import get_apple_model
+from src.model import get_apple_model, get_alphabet_model
 import numpy as np
 
 
@@ -11,6 +11,12 @@ class AutoRegressor(RegressorMixin):
         match stock_name:
             case 'Apple':
                 self._model, self._html = get_apple_model()
+            case 'Alphabet':
+                self._model, self._html = get_alphabet_model()
+            case 'Microsoft':
+                self._model, self._html = get_apple_model()
+            case 'Tesla':
+                self._model, self._html = get_alphabet_model()
 
     @property
     def html_repr(self) -> str:
