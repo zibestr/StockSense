@@ -113,7 +113,7 @@ def __right_column(df: DataFrame, stock_name: str):
     ax = fig.subplots(1, 1)
     ax.boxplot(df['Close'])
     st.pyplot(fig,
-              use_container_width=False)
+              use_container_width=True)
 
 
 def __sidebar():
