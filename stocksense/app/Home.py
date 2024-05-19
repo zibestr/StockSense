@@ -162,7 +162,7 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
 
     st.markdown('### Forecasting prices')
     st.write('Regression algorithm:')
-    components.html(regressor.html_repr, scrolling=True)
+    components.html(regressor.html_repr, height=300, scrolling=True)
 
     predicted = np.round(
             regressor.predict(
