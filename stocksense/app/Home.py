@@ -128,17 +128,17 @@ def __stock_stats(df: DataFrame, stock_name: str, period: str):
     st.header(f'Stock Stats for {stock_name}')
     st.write(f'Period: {period}')
     st.markdown(
-        f'- Mean price: {df['Close'].mean():.3f}' +
+        f'- Mean price: {df["Close"].mean():.3f}' +
         '\n' +
-        f'- Median price: {df['Close'].median():.3f}' +
+        f'- Median price: {df["Close"].median():.3f}' +
         '\n' +
-        f'- First Quantile price: {df['Close'].quantile(0.25):.3f}' +
+        f'- First Quantile price: {df["Close"].quantile(0.25):.3f}' +
         '\n' +
-        f'- Third Quantile price: {df['Close'].quantile(0.75):.3f}' +
+        f'- Third Quantile price: {df["Close"].quantile(0.75):.3f}' +
         '\n' +
-        f'- Max price: {df['Close'].max():.3f}' +
+        f'- Max price: {df["Close"].max():.3f}' +
         '\n' +
-        f'- Min price: {df['Close'].min():.3f}'
+        f'- Min price: {df["Close"].min():.3f}'
     )
 
 
@@ -156,9 +156,7 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
     load_bar = st.progress(0, text=progress_text)
 
     load_bar.progress(50, text=progress_text)
-    # TODO: add other models
-    # regressor = AutoRegressor(stock_name)
-    regressor = AutoRegressor('Apple')
+    regressor = AutoRegressor(stock_name)
     load_bar.progress(100, text=progress_text)
     load_bar.empty()
 
