@@ -120,7 +120,7 @@ def __sidebar():
     st.sidebar.markdown('> Make smarter investment decisions.')
     st.sidebar.markdown('''**Stock Sense** provides clear, concise stock
                         analysis to help you navigate the market.''')
-    st.sidebar.write('Mean accuracy of models: 97,53 %')
+    st.sidebar.write('Mean accuracy of models: 97,84 %')
     st.sidebar.markdown('author: [zibestr](https://github.com/zibestr)')
 
 
