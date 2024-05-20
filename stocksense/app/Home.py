@@ -120,7 +120,7 @@ def __sidebar():
     st.sidebar.markdown('> Make smarter investment decisions.')
     st.sidebar.markdown('''**Stock Sense** provides clear, concise stock
                         analysis to help you navigate the market.''')
-    st.sidebar.write('Mean accuracy of models: 97,84 %')
+    st.sidebar.write('Mean accuracy of models: 97,88 %')
     st.sidebar.markdown('author: [zibestr](https://github.com/zibestr)')
 
 
@@ -128,17 +128,17 @@ def __stock_stats(df: DataFrame, stock_name: str, period: str):
     st.header(f'Stock Stats for {stock_name}')
     st.write(f'Period: {period}')
     st.markdown(
-        f'- Mean price: {df["Close"].mean():.3f}' +
+        f'- Mean price: {df["Close"].mean():.2f}' +
         '\n' +
-        f'- Median price: {df["Close"].median():.3f}' +
+        f'- Median price: {df["Close"].median():.2f}' +
         '\n' +
-        f'- First Quantile price: {df["Close"].quantile(0.25):.3f}' +
+        f'- First Quantile price: {df["Close"].quantile(0.25):.2f}' +
         '\n' +
-        f'- Third Quantile price: {df["Close"].quantile(0.75):.3f}' +
+        f'- Third Quantile price: {df["Close"].quantile(0.75):.2f}' +
         '\n' +
-        f'- Max price: {df["Close"].max():.3f}' +
+        f'- Max price: {df["Close"].max():.2f}' +
         '\n' +
-        f'- Min price: {df["Close"].min():.3f}'
+        f'- Min price: {df["Close"].min():.2f}'
     )
 
 
@@ -173,7 +173,8 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
     )
     last_price = df['Close'].iloc[-1]
     delta = round((predicted[0] - last_price) / last_price * 100, 2)
-    st.metric('#### Next price', predicted[0], f'{delta}%')
+    st.metric('#### Next price', predicted[0],
+              f'{(predicted[0] - last_price):0.2f} ({delta}%)')
 
     if period > 1:
         predicted_df = DataFrame({'Day': [f'Day {i}'

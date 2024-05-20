@@ -2,15 +2,21 @@ from sklearn.base import BaseEstimator
 from joblib import load
 
 
-def get_apple_model() -> tuple[BaseEstimator, str]:
+def get_apple_model() -> BaseEstimator:
     model: BaseEstimator = load('stocksense/res/models/apple_model.bin')
-    with open('stocksense/res/html/apple_model.html') as html_file:
-        html = html_file.read()
-    return model, html
+    return model
 
 
-def get_alphabet_model() -> tuple[BaseEstimator, str]:
+def get_alphabet_model() -> BaseEstimator:
     model: BaseEstimator = load('stocksense/res/models/alphabet_model.bin')
-    with open('stocksense/res/html/alphabet_model.html') as html_file:
-        html = html_file.read()
-    return model, html
+    return model
+
+
+def get_tesla_model() -> BaseEstimator:
+    model: BaseEstimator = load('stocksense/res/models/tesla_model.bin')
+    return model
+
+
+def get_microsoft_model() -> BaseEstimator:
+    model: BaseEstimator = load('stocksense/res/models/microsoft_model.bin')
+    return model
