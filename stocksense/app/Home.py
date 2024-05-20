@@ -144,11 +144,11 @@ def __stock_stats(df: DataFrame, stock_name: str, period: str):
         '\n' +
         f'- Median price: {df["Close"].median():.2f} {currency}' +
         '\n' +
-        f'- First Quantile price: {df["Close"]
-                                   .quantile(0.25):.2f} {currency}' +
+        '- First Quantile price:' +
+        f'{df["Close"].quantile(0.25):.2f} {currency}' +
         '\n' +
-        f'- Third Quantile price: {df["Close"]
-                                   .quantile(0.75):.2f} {currency}' +
+        '- Third Quantile price:' +
+        f'{df["Close"].quantile(0.75):.2f} {currency}' +
         '\n' +
         f'- Max price: {df["Close"].max():.2f} {currency}' +
         '\n' +
