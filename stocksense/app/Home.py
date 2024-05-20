@@ -188,7 +188,7 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
 
     price_col, predicted_col = st.columns(2)
     with price_col:
-        st.metric('#### Last Price', f'{df['Close'].iloc[-1]:0.2f} {currency}')
+        st.metric('#### Last Price', f'{df["Close"].iloc[-1]:0.2f} {currency}')
     with predicted_col:
         st.metric('#### Next price', f'{predicted[0]} {currency}',
                   f'{(predicted[0] - last_price):0.2f} ({delta}%)')
