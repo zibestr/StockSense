@@ -1,2 +1,2 @@
 source .venv/bin/activate
-streamlit run stocksense/main.py
+streamlit run main.py

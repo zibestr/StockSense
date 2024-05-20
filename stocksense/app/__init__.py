@@ -1,3 +1,3 @@
-from app.Home import (
+from stocksense.app.Home import (
     home_page,
 )

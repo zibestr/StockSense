@@ -1,4 +1,4 @@
-from app import home_page
+from stocksense.app import home_page
 
 
 if __name__ == '__main__':

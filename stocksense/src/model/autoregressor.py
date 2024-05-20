@@ -1,6 +1,6 @@
 from sklearn.base import RegressorMixin
 from sklearn.utils import estimator_html_repr
-from src.model import (
+from stocksense.src.model import (
     get_apple_model,
     get_alphabet_model,
     get_tesla_model,

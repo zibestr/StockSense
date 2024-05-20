@@ -2,21 +2,13 @@ import streamlit as st
 import yfinance as yf
 from pandas import DataFrame
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from src.model.autoregressor import AutoRegressor
-from src.backend import moving_average
+from stocksense.src.model.autoregressor import AutoRegressor
+from stocksense.src.backend import moving_average
 import streamlit.components.v1 as components
+import plotly.graph_objs as go
 
-mpl.rc('axes', facecolor='#0E1117', edgecolor='#0E1117')
-mpl.rc('savefig', facecolor='#0E1117', edgecolor='#0E1117')
-mpl.rc('xtick', color='#0E1117')
-mpl.rc('ytick', color='white')
-mpl.rc('font', size=6, weight='bold', style='normal')
-mpl.rc('boxplot.capprops', linewidth=1.5, color='white')
-mpl.rc('boxplot.boxprops', linewidth=1.5, color='white')
-mpl.rc('boxplot.whiskerprops', linewidth=0.5, color='white')
-mpl.rc('boxplot.medianprops', linewidth=1.5, color='#FF4B4B')
+
+currency = '$'
 
 
 def home_page():
@@ -83,7 +75,6 @@ def __load_ticker(stock_name: str, period: str) -> DataFrame:
     df = yf.download(tickers=[stock_name2ticket[stock_name]],
                      period=periods[period])
     load_bar.progress(50, text=progress_text)
-    df = df[['Close']]
 
     load_bar.progress(75, text=progress_text)
     load_bar.progress(100, text=progress_text)
@@ -99,21 +90,42 @@ def __right_column(df: DataFrame, stock_name: str):
     df['Date'] = df.index
     graphic_data = df[['Date', 'Close']]
     graphic_data['Moving Average'] = moving_average(df['Close'].to_numpy())
-    tab_chart.line_chart(graphic_data, x='Date', y=['Close', 'Moving Average'],
-                         use_container_width=True,
-                         height=700)
+    close_prices = go.Line(x=graphic_data['Date'],
+                           y=graphic_data['Close'],
+                           name='Close Prices')
+    ma = go.Line(x=graphic_data['Date'],
+                 y=graphic_data['Moving Average'],
+                 name='Moving Average')
+
+    layout = go.Layout(xaxis=dict(title='Date'),
+                       yaxis=dict(title='Price'),
+                       height=500)
+
+    fig = go.Figure(data=[close_prices, ma], layout=layout)
+
+    tab_chart.plotly_chart(fig,
+                           use_container_width=True)
 
     tab_df.subheader("Dataframe")
     tab_df.write(f'Last 20 close prices of {stock_name}')
-    tab_df.dataframe(df.tail(20), use_container_width=True, hide_index=True)
+    tab_df.dataframe(df[['Date', 'Close']].tail(20), use_container_width=True,
+                     hide_index=True)
 
-    st.subheader('Boxplot:')
+    st.subheader('Candlestick:')
+    candlestick = go.Candlestick(x=df['Date'],
+                                 open=df['Open'],
+                                 high=df['High'],
+                                 low=df['Low'],
+                                 close=df['Close'])
 
-    fig = plt.figure(figsize=(3, 3))
-    ax = fig.subplots(1, 1)
-    ax.boxplot(df['Close'])
-    st.pyplot(fig,
-              use_container_width=True)
+    layout = go.Layout(xaxis=dict(title='Date'),
+                       yaxis=dict(title='Price'),
+                       height=600)
+
+    fig = go.Figure(data=[candlestick], layout=layout)
+
+    st.plotly_chart(fig,
+                    use_container_width=True)
 
 
 def __sidebar():
@@ -128,17 +140,19 @@ def __stock_stats(df: DataFrame, stock_name: str, period: str):
     st.header(f'Stock Stats for {stock_name}')
     st.write(f'Period: {period}')
     st.markdown(
-        f'- Mean price: {df["Close"].mean():.2f}' +
+        f'- Mean price: {df["Close"].mean():.2f} {currency}' +
         '\n' +
-        f'- Median price: {df["Close"].median():.2f}' +
+        f'- Median price: {df["Close"].median():.2f} {currency}' +
         '\n' +
-        f'- First Quantile price: {df["Close"].quantile(0.25):.2f}' +
+        f'- First Quantile price: {df["Close"]
+                                   .quantile(0.25):.2f} {currency}' +
         '\n' +
-        f'- Third Quantile price: {df["Close"].quantile(0.75):.2f}' +
+        f'- Third Quantile price: {df["Close"]
+                                   .quantile(0.75):.2f} {currency}' +
         '\n' +
-        f'- Max price: {df["Close"].max():.2f}' +
+        f'- Max price: {df["Close"].max():.2f} {currency}' +
         '\n' +
-        f'- Min price: {df["Close"].min():.2f}'
+        f'- Min price: {df["Close"].min():.2f} {currency}'
     )
 
 
@@ -161,8 +175,6 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
     load_bar.empty()
 
     st.markdown('### Forecasting prices')
-    st.write('Regression algorithm:')
-    components.html(regressor.html_repr, height=300, scrolling=True)
 
     predicted = np.round(
             regressor.predict(
@@ -173,8 +185,13 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
     )
     last_price = df['Close'].iloc[-1]
     delta = round((predicted[0] - last_price) / last_price * 100, 2)
-    st.metric('#### Next price', predicted[0],
-              f'{(predicted[0] - last_price):0.2f} ({delta}%)')
+
+    price_col, predicted_col = st.columns(2)
+    with price_col:
+        st.metric('#### Last Price', f'{df['Close'].iloc[-1]:0.2f} {currency}')
+    with predicted_col:
+        st.metric('#### Next price', f'{predicted[0]} {currency}',
+                  f'{(predicted[0] - last_price):0.2f} ({delta}%)')
 
     if period > 1:
         predicted_df = DataFrame({'Day': [f'Day {i}'
@@ -184,10 +201,22 @@ def __predict_block(df: DataFrame, stock_name: str, str_period: str):
         tab_chart, tab_df = st.tabs(['📈 Chart', '🗃 Data'])
 
         tab_chart.subheader(f'Future prices of {stock_name}')
-        tab_chart.line_chart(predicted_df, x='Day', y='Price',
-                             height=500)
+        line_chart = go.Line(x=predicted_df['Day'],
+                          y=predicted_df['Price'])
+
+        layout = go.Layout(xaxis=dict(title='Day'),
+                           yaxis=dict(title='Price'),
+                           height=500)
+
+        fig = go.Figure(data=[line_chart], layout=layout)
+
+        tab_chart.plotly_chart(fig,
+                               use_container_width=True)
 
         tab_df.subheader("Dataframe")
         tab_df.dataframe(predicted_df,
                          use_container_width=True,
                          hide_index=True)
+
+    st.markdown('#### Regression algorithm:')
+    components.html(regressor.html_repr, height=300, scrolling=True)
