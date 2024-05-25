@@ -15,8 +15,8 @@ class TimeSeriesDataset(Sequence):
         # set window size to 30, because minimum period for analysis is 30 days
         self.__window_size = 30
         self.__data = data
-        self.__mean = data.mean()
-        self.__std = data.std()
+        self.min = data.min()
+        self.max = data.max()
 
     def __getitem__(self, ind: int | slice):
         """_summary_
@@ -29,7 +29,7 @@ class TimeSeriesDataset(Sequence):
         """
         if isinstance(ind, slice):
             start = 0 if ind.start is None else ind.start
-            stop = ind.stop if len(self) is None else ind.stop
+            stop = len(self) if ind.stop is None else ind.stop
             step = 1 if ind.step is None else ind.step
             return (np.array([self.__get_one(ind)[0]
                               for ind in range(start, stop,
