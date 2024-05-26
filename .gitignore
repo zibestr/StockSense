@@ -6,3 +6,4 @@ __pycache__
 test
 *.ipynb
 dev_requirements.txt
+.dev_venv
